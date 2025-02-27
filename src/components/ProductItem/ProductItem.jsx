@@ -1,53 +1,137 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../redux/cartSlice';
 import { ToastContainer, toast } from 'react-toastify';
+import { 
+  Button,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActions,
+  Typography,
+  Box,
+  Chip,
+  Rating,
+  Stack,
+  Grid
+} from "@mui/material";
+import { styled } from '@mui/material/styles';
+
+// Styled Link component that looks like a button
+const StyledLink = styled(Link)(({ theme }) => ({
+  textDecoration: 'none',
+  color: theme.palette.primary.main,
+  width: '100%',
+  textAlign: 'center',
+  padding: theme.spacing(1),
+  borderRadius: theme.shape.borderRadius,
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+  },
+}));
 
 function ProductItem({ product }) {
   const dispatch = useDispatch();
-  const notify = () => toast("product Added!");
-
+  const notify = () => toast("Product Added!");
 
   return (
-    <>
-    <div className="col-12 col-md-6 col-lg-4">
-      <div className="card h-100 shadow-sm border-0 rounded-3">
-        <div className="position-relative">
-          <div className="d-flex align-items-center justify-content-center bg-light" style={{ height: "200px" }}>
-
-            <img
-              src={product.image}
-              alt={product.title}
-              className="card-img-top p-3"
-              style={{ maxHeight: "180px", objectFit: "contain" }}
-            />
-          </div>
+    <Grid item xs={12} md={6} lg={4}>
+      <Card 
+        elevation={3} 
+        sx={{ 
+          height: '100%', 
+          borderRadius: 3,
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <Box sx={{ position: 'relative', bgcolor: 'background.paper', height: 200 }}>
+          <CardMedia
+            component="img"
+            image={product.image}
+            alt={product.title}
+            sx={{ 
+              maxHeight: 180, 
+              objectFit: 'contain',
+              p: 3,
+              width: 'auto',
+              margin: '0 auto'
+            }}
+          />
           
-          <div className="position-absolute top-0 end-0 m-2">
-            <span className="badge bg-danger ">{product.category}</span>
-          </div>
-        </div>
+          <Chip 
+            label={product.category}
+            color="error"
+            size="small"
+            sx={{ 
+              position: 'absolute', 
+              top: 8, 
+              right: 8 
+            }}
+          />
+        </Box>
 
-        <div className="card-body d-flex flex-column">
-          <h5 className="card-title text-truncate">{product.title}</h5>
+        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <Typography 
+            variant="h6" 
+            component="h2" 
+            noWrap 
+            title={product.title}
+            sx={{ mb: 2 }}
+          >
+            {product.title}
+          </Typography>
 
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <span className=" ">rating : <span className=' text-warning'> ★{product.rating.rate} </span> </span>
-            <span className="fw-bold text-success fs-5">${product.price}</span>
-          </div>
+          <Stack 
+            direction="row" 
+            justifyContent="space-between" 
+            alignItems="center" 
+            sx={{ mb: 3 }}
+          >
+            <Box display="flex" alignItems="center">
+              <Typography variant="body2" component="span">
+                Rating: 
+              </Typography>
+              <Rating 
+                value={product.rating.rate} 
+                precision={0.1} 
+                readOnly 
+                size="small"
+                sx={{ ml: 1 }}
+              />
+            </Box>
+            <Typography 
+              variant="h6" 
+              component="span" 
+              color="success.main" 
+              fontWeight="bold"
+            >
+              ${product.price}
+            </Typography>
+          </Stack>
+        </CardContent>
 
-          <button className="btn btn-info w-100"  onClick={() => {notify(); dispatch(addToCart(product.id))}}>Add to Cart</button>
+        <CardActions sx={{ p: 2, pt: 0, flexDirection: 'column', gap: 1 }}>
+          <Button 
+            variant="contained" 
+            color="info" 
+            fullWidth
+            onClick={() => {
+              notify(); 
+              dispatch(addToCart(product.id));
+            }}
+          >
+            Add to Cart
+          </Button>
           <ToastContainer />
 
-          <Link to={`/PoductDetails/${product.id}`} className="btn btn-link shadow-sm mt-2 text-decoration-none">
-            More Details
-          </Link>
-        </div>
-      </div>
-    </div>
-    
-    </>
+          <StyledLink to={`/PoductDetails/${product.id}`}>
+            <Typography variant="body2">More Details</Typography>
+          </StyledLink>
+        </CardActions>
+      </Card>
+    </Grid>
   )
 }
 

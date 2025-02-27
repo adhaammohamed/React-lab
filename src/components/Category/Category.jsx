@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProductItem from '../ProductItem/ProductItem';
+import { 
+  Container, 
+  Typography, 
+  Box, 
+  Paper, 
+  Grid, 
+  Button, 
+  ButtonGroup,
+  CircularProgress,
+  Tabs,
+  Tab
+} from "@mui/material";
 
 const Category = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(false);
-
-
-
-
 
   const fetchCategories = async () => {
     try {
@@ -20,9 +28,10 @@ const Category = () => {
       setSelectedCategory(data[0]);
       
     } catch (error) {
-      console.error( error);
+      console.error(error);
     }
   };
+  
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -33,62 +42,74 @@ const Category = () => {
       const { data } = await axios.get(`https://fakestoreapi.com/products/category/${category}`);
       setProducts(data);
       setLoading(false);
-
     } catch (error) {
-      console.error( error);
+      console.error(error);
       setLoading(false);
-
     }
   };
+  
   useEffect(() => {
     if (selectedCategory) {
       fetchProductsByCategory(selectedCategory);
     }
   }, [selectedCategory]);
 
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+  };
+
   return (
-    
-    <div>
-          <div className="container-fluid bg-light py-3 border border-top-0 border-3 rounded-bottom my-5 border-info">
-            <div className="container  border-info p-3">
-              <h1 className="text-center ">Category</h1>
-            </div>
-          </div>
+    <Box>
+      <Paper 
+        elevation={0} 
+        sx={{ 
+          bgcolor: 'background.paper', 
+          py: 3, 
+          mb: 5, 
+          mt: 5,
+          borderBottom: 3, 
+          borderLeft: 3, 
+          borderRight: 3, 
+          borderColor: 'info.main',
+          borderRadius: '0 0 8px 8px'
+        }}
+      >
+        <Container>
+          <Typography variant="h4" component="h1" align="center">
+            Category
+          </Typography>
+        </Container>
+      </Paper>
 
+      <Container sx={{ py: 4 }}>
+        <Box sx={{ mb: 4, my: 5, display: 'flex', justifyContent: 'center' }}>
+          <ButtonGroup variant="outlined">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                variant={selectedCategory === category ? "contained" : "outlined"}
+                color="secondary"
+              >
+                {category}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </Box>
 
-      <div className="container py-4">
-      <div className="mb-4 my-5">
-      <ul className="nav nav-pills gap-2">
-      {categories.map((category) => (
-        <li className="nav-item" key={category}>
-          <button
-            onClick={() => setSelectedCategory(category)}
-            className={`btn  ${selectedCategory === category ? 'text-bg-secondary ' : ''}`}
-          >
-            {category}
-          </button>
-        </li>
-      ))}
-      </ul>
-      </div>
-
-      {loading ? (
-      <div className="text-center ">
-      <div className="spinner-grow text-success " role="status">
-        <span className="visually-hidden  ">Loading...</span>
-      </div>
-      </div>
-      ) : (
-      <>
-      <div className="row g-4">
-      {products.map((product) => (<ProductItem key={product.id} product={product} />))}
-      </div>
-      </>
-
-      )}
-      </div>
-    </div>
-
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <CircularProgress color="success" />
+          </Box>
+        ) : (
+          <Grid container spacing={4}>
+            {products.map((product) => (
+              <ProductItem key={product.id} product={product} />
+            ))}
+          </Grid>
+        )}
+      </Container>
+    </Box>
   );
 };
 

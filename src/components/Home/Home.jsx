@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import "./Home.css";
 import axios from "axios";
 import ProductItem from "../ProductItem/ProductItem";
+import { 
+  Container, 
+  Typography, 
+  Box, 
+  Paper, 
+  Grid, 
+  Button, 
+  CircularProgress, 
+  Stack,
+  Pagination
+} from "@mui/material";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -17,9 +27,8 @@ const ProductList = () => {
         setProducts(data);
         console.log(data);
         setLoading(false);
-
       } catch (error) {
-        console.log( error);
+        console.log(error);
         setLoading(false);
       }
     };
@@ -34,43 +43,57 @@ const ProductList = () => {
     currentPage * itemsPerPage
   );
 
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
   return (
     <>
-      <div className="container-fluid bg-light py-3 border border-top-0 border-3 rounded-bottom my-5 border-info">
-        <div className="container border-info p-3">
-          <h1 className="text-center">Home</h1>
-        </div>
-      </div>
+      <Paper 
+        elevation={0} 
+        sx={{ 
+          bgcolor: 'background.paper', 
+          py: 3, 
+          mb: 5, 
+          mt: 5,
+          borderBottom: 3, 
+          borderLeft: 3, 
+          borderRight: 3, 
+          borderColor: 'info.main',
+          borderRadius: '0 0 8px 8px'
+        }}
+      >
+        <Container>
+          <Typography variant="h4" component="h1" align="center">
+            Home
+          </Typography>
+        </Container>
+      </Paper>
 
-      <div className="container py-5 text-center">
+      <Container sx={{ py: 5, textAlign: 'center' }}>
         {loading ? (
-          <div className="spinner-border text-success" role="status" />
+          <CircularProgress color="success" />
         ) : (
           <>
-            <div className="row g-4">
+            <Grid container spacing={4}>
               {currentProducts.map((product) => (
                 <ProductItem key={product.id} product={product} />
               ))}
-            </div>
-            <div className="mt-4">
-              <button
-                className="btn btn-outline-success mx-1"
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              <button
-                className="btn btn-outline-success mx-1"
-                onClick={() => setCurrentPage((p) => p + 1)}
-                disabled={currentPage >= totalPages}
-              >
-                Next
-              </button>
-            </div>
+            </Grid>
+            
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+              <Pagination 
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                variant="outlined"
+                shape="rounded"
+              />
+            </Box>
           </>
         )}
-      </div>
+      </Container>
     </>
   );
 };
